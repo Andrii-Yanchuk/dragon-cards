@@ -36,7 +36,7 @@ interface GameStore {
 
 export const useGameStore = create<GameStore>((set, get) => ({
   balance: INITIAL_BALANCE,
-  bet: 0,
+  bet: 1,
   risk: "Low",
   status: "idle",
   multipliers: ["LOST", 1, 2, 1, 2.5, 1.5],
