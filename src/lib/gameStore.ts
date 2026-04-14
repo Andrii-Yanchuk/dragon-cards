@@ -49,7 +49,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({ bet: Math.min(v, 1000) });
   },
 
-  setRisk: (r) => set({ risk: r }),
+  setRisk: (risk) => set({ risk, multipliers: [...RISK_MULTIPLIERS[risk]] }),
 
   setOrder: (order) => set({ order }),
 
