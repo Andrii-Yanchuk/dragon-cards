@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -52,11 +54,17 @@
 
 #root {
   width: 1126px;
+  height: 100dvh;
   max-width: 100%;
   margin: 0 auto;
+  padding: 20px;
   text-align: center;
-  min-height: 100svh;
   display: flex;
-  flex-direction: column;
   box-sizing: border-box;
+}
+
+.game {
+  width: 100%;
+  height: 100svh;
+  background-color: #aa3bff;
 }
