@@ -4,7 +4,7 @@ import { GameBoard } from "./components/GameBoard";
 
 function App() {
   return (
-    <main className="text-foreground flex flex-row w-full rounded-2xl">
+    <main className="text-foreground flex  flex-row w-full max-h-175 rounded-2xl">
       <aside>
         <ControlPanel />
       </aside>

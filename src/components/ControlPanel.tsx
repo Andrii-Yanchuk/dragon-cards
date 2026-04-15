@@ -15,7 +15,7 @@ export function ControlPanel() {
   const handleMax = () => setBet(Math.min(balance, 1000));
 
   return (
-    <div className="w-64 h-full bg-(--code-bg) border-r border-[#2e303a] p-4 flex flex-col">
+    <div className="w-64 h-full max-h-175 bg-(--code-bg) border-r border-[#2e303a] p-4 flex flex-col">
       {/* BET */}
       <div className="mb-4">
         <h2 className="w-fit text-sm text-gray-400 mb-2">Bet Amount</h2>
