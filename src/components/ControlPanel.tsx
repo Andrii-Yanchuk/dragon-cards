@@ -1,14 +1,17 @@
 import { DollarSign } from "lucide-react";
-import { useGameStore, type Risk } from "../lib/gameStore";
+import {
+  useGameStorePersisted as useGameStore,
+  type Risk,
+} from "../lib/gameStore";
 import classNames from "classnames";
 
 export function ControlPanel() {
-  const bet = useGameStore((s) => s.currentBet);
-  const setBet = useGameStore((s) => s.setBet);
-  const balance = useGameStore((s) => s.playerBalance);
+  const bet = useGameStore((s) => s.betAmount);
+  const setBet = useGameStore((s) => s.setBetAmount);
+  const balance = useGameStore((s) => s.balance);
   const risk = useGameStore((s) => s.risk);
   const setRisk = useGameStore((s) => s.setRisk);
-  const placeBet = useGameStore((s) => s.placeBet);
+  const startRound = useGameStore((s) => s.startRound);
 
   const handleHalf = () => setBet(bet / 2);
   const handleDouble = () => setBet(bet * 2);
@@ -83,7 +86,7 @@ export function ControlPanel() {
       </div>
 
       <button
-        onClick={placeBet}
+        onClick={startRound}
         className="bg-purple-500 hover:bg-purple-600 transition rounded-xl py-3 text-white font-medium shadow-lg shadow-purple-500/20 cursor-pointer"
       >
         Place Bet

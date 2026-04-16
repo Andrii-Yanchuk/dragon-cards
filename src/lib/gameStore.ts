@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export type Risk = "Low" | "Medium" | "High" | "Classic";
 export type GameStatus = "idle" | "playing" | "revealed";
@@ -26,126 +27,227 @@ function shuffle(array: number[]) {
 
 interface GameStore {
   // State
-  playerBalance: number;
-  currentBet: number;
+  balance: number;
+  betAmount: number;
   risk: Risk;
-  status: GameStatus;
-  positionMultipliers: Multiplier[];
-  topRowOrder: number[];
-  bottomRowOrder: number[];
-  winAmount: number | null;
-  revealedTopPositions: number[];
-  highlightedPositions: number[];
+  roundStatus: GameStatus;
+  slotMultipliers: Multiplier[];
+  shuffledTopRow: number[];
+  playerBottomRow: number[];
+  payout: number | null;
+  revealedTopCount: number;
+  highlightedSlots: number[];
 
   // Actions
-  setBet: (currentBet: number) => void;
+  setBetAmount: (betAmount: number) => void;
   setRisk: (risk: Risk) => void;
-  placeBet: () => void;
-  setBottomRowOrder: (bottomRowOrder: number[]) => void;
-  playAgain: () => void;
+  startRound: () => void;
+  setPlayerBottomRow: (playerBottomRow: number[]) => void;
+  resetRound: () => void;
   resetGame: () => void;
-  revealCards: () => void;
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
-  playerBalance: INITIAL_BALANCE,
-  currentBet: 1,
+  balance: INITIAL_BALANCE,
+  betAmount: 1,
   risk: "Low",
-  status: "idle",
-  positionMultipliers: ["LOST", 1, 2, 1, 2.5, 1.5],
-  topRowOrder: [0, 1, 2, 3, 4, 5],
-  bottomRowOrder: [0, 1, 2, 3, 4, 5],
-  winAmount: null,
-  revealedTopPositions: [],
-  highlightedPositions: [],
+  roundStatus: "idle",
+  slotMultipliers: ["LOST", 1, 2, 1, 2.5, 1.5],
+  shuffledTopRow: [0, 1, 2, 3, 4, 5],
+  playerBottomRow: [0, 1, 2, 3, 4, 5],
+  payout: null,
+  revealedTopCount: 0,
+  highlightedSlots: [],
 
-  revealCards: async () => {
-    const total = 6;
-
-    for (let i = 0; i < total; i++) {
-      await new Promise((res) => setTimeout(res, 300));
-      set((state) => ({
-        revealedTopPositions: [...state.revealedTopPositions, i],
-      }));
-    }
-  },
-
-  setBet: (v) => {
+  setBetAmount: (v) => {
     if (v < 0) return;
-    set({ currentBet: Math.min(v, 1000) });
+    set({ betAmount: Math.min(v, 1000) });
   },
 
   setRisk: (risk) =>
-    set({ risk, positionMultipliers: [...RISK_MULTIPLIERS[risk]] }),
+    set({ risk, slotMultipliers: [...RISK_MULTIPLIERS[risk]] }),
 
-  setBottomRowOrder: (bottomRowOrder) => set({ bottomRowOrder }),
+  setPlayerBottomRow: (playerBottomRow) => set({ playerBottomRow }),
 
-  placeBet: async () => {
-    const { currentBet, playerBalance, revealCards } = get();
+  startRound: async () => {
+    const { betAmount, balance, playerBottomRow, slotMultipliers } = get();
 
-    if (!currentBet || currentBet > playerBalance) return;
+    if (!betAmount || betAmount > balance) return;
 
-    const shuffledTopRowOrder = shuffle([0, 1, 2, 3, 4, 5]);
-
-    set({
-      playerBalance: playerBalance - currentBet,
-      status: "playing",
-      winAmount: null,
-      revealedTopPositions: [],
-      topRowOrder: shuffledTopRowOrder,
-    });
-
-    await revealCards();
-
-    const roundResults = get().topRowOrder.map((topId, i) => {
-      const bottomId = get().bottomRowOrder[i];
-
-      if (topId !== bottomId) return null;
-
-      return get().positionMultipliers[i];
-    });
-
-    const hasLost = roundResults.includes("LOST");
-
-    const winAmount = hasLost
-      ? 0
-      : roundResults
-          .filter((v): v is number => typeof v === "number")
-          .reduce((sum, v) => sum + v, 0) * get().currentBet;
-
-    const highlightedPositions = roundResults
-      .map((v, i) => (v !== null ? i : null))
-      .filter((v): v is number => v !== null);
+    const shuffledTopRow = shuffle([0, 1, 2, 3, 4, 5]);
 
     set({
-      status: "revealed",
-      winAmount,
-      highlightedPositions,
-      playerBalance: get().playerBalance + winAmount,
+      balance: balance - betAmount,
+      roundStatus: "playing",
+      payout: null,
+      revealedTopCount: 0,
+      highlightedSlots: [],
+      shuffledTopRow,
     });
+
+    const total = 6;
+    for (let i = 1; i <= total; i++) {
+      await new Promise((res) => setTimeout(res, 300));
+      set({ revealedTopCount: i });
+    }
+
+    let hasLost = false;
+    let multiplierSum = 0;
+    const highlightedSlots: number[] = [];
+
+    for (let i = 0; i < total; i++) {
+      if (shuffledTopRow[i] !== playerBottomRow[i]) continue;
+
+      highlightedSlots.push(i);
+      const multiplier = slotMultipliers[i];
+      if (multiplier === "LOST") {
+        hasLost = true;
+      } else {
+        multiplierSum += multiplier;
+      }
+    }
+
+    const payout = hasLost ? 0 : multiplierSum * betAmount;
+
+    set((state) => ({
+      roundStatus: "revealed",
+      payout,
+      highlightedSlots,
+      balance: state.balance + payout,
+    }));
   },
 
   resetGame: () => {
     set({
-      playerBalance: INITIAL_BALANCE,
-      currentBet: 1,
+      balance: INITIAL_BALANCE,
+      betAmount: 1,
       risk: "Low",
-      status: "idle",
-      positionMultipliers: [...RISK_MULTIPLIERS["Low"]],
-      bottomRowOrder: [0, 1, 2, 3, 4, 5],
-      winAmount: null,
-      revealedTopPositions: [],
-      highlightedPositions: [],
+      roundStatus: "idle",
+      slotMultipliers: [...RISK_MULTIPLIERS["Low"]],
+      playerBottomRow: [0, 1, 2, 3, 4, 5],
+      payout: null,
+      revealedTopCount: 0,
+      highlightedSlots: [],
     });
   },
 
-  playAgain: () => {
+  resetRound: () => {
     set({
-      status: "idle",
-      bottomRowOrder: [0, 1, 2, 3, 4, 5],
-      winAmount: null,
-      revealedTopPositions: [],
-      highlightedPositions: [],
+      roundStatus: "idle",
+      playerBottomRow: [0, 1, 2, 3, 4, 5],
+      payout: null,
+      revealedTopCount: 0,
+      highlightedSlots: [],
     });
   },
 }));
+
+export const useGameStorePersisted = create<GameStore>()(
+  persist(
+    (set, get) => ({
+      balance: INITIAL_BALANCE,
+      betAmount: 1,
+      risk: "Low",
+      roundStatus: "idle",
+      slotMultipliers: ["LOST", 1, 2, 1, 2.5, 1.5],
+      shuffledTopRow: [0, 1, 2, 3, 4, 5],
+      playerBottomRow: [0, 1, 2, 3, 4, 5],
+      payout: null,
+      revealedTopCount: 0,
+      highlightedSlots: [],
+
+      setBetAmount: (v) => {
+        if (v < 0) return;
+        set({ betAmount: Math.min(v, 1000) });
+      },
+
+      setRisk: (risk) =>
+        set({ risk, slotMultipliers: [...RISK_MULTIPLIERS[risk]] }),
+
+      setPlayerBottomRow: (playerBottomRow) => set({ playerBottomRow }),
+
+      startRound: async () => {
+        const { betAmount, balance, playerBottomRow, slotMultipliers } = get();
+
+        if (!betAmount || betAmount > balance) return;
+
+        const shuffledTopRow = shuffle([0, 1, 2, 3, 4, 5]);
+
+        set({
+          balance: balance - betAmount,
+          roundStatus: "playing",
+          payout: null,
+          revealedTopCount: 0,
+          highlightedSlots: [],
+          shuffledTopRow,
+        });
+
+        const total = 6;
+        for (let i = 1; i <= total; i++) {
+          await new Promise((res) => setTimeout(res, 300));
+          set({ revealedTopCount: i });
+        }
+
+        let hasLost = false;
+        let multiplierSum = 0;
+        const highlightedSlots: number[] = [];
+
+        for (let i = 0; i < total; i++) {
+          if (shuffledTopRow[i] !== playerBottomRow[i]) continue;
+
+          highlightedSlots.push(i);
+          const multiplier = slotMultipliers[i];
+          if (multiplier === "LOST") {
+            hasLost = true;
+          } else {
+            multiplierSum += multiplier;
+          }
+        }
+
+        const payout = hasLost ? 0 : multiplierSum * betAmount;
+
+        set((state) => ({
+          roundStatus: "revealed",
+          payout,
+          highlightedSlots,
+          balance: state.balance + payout,
+        }));
+      },
+
+      resetGame: () => {
+        set({
+          balance: INITIAL_BALANCE,
+          betAmount: 1,
+          risk: "Low",
+          roundStatus: "idle",
+          slotMultipliers: [...RISK_MULTIPLIERS["Low"]],
+          playerBottomRow: [0, 1, 2, 3, 4, 5],
+          payout: null,
+          revealedTopCount: 0,
+          highlightedSlots: [],
+        });
+      },
+
+      resetRound: () => {
+        set({
+          roundStatus: "idle",
+          playerBottomRow: [0, 1, 2, 3, 4, 5],
+          payout: null,
+          revealedTopCount: 0,
+          highlightedSlots: [],
+        });
+      },
+    }),
+    {
+      name: "dragon-cards:v1",
+      partialize: (state) => ({
+        balance: state.balance,
+        risk: state.risk,
+      }),
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        state.setRisk(state.risk);
+      },
+    },
+  ),
+);
