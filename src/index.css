@@ -60,5 +60,15 @@
   padding: 20px;
   text-align: center;
   display: flex;
+  justify-content: center;
+  align-items: center;
   box-sizing: border-box;
+
+  @media (max-width: 1024px) {
+    width: 100%;
+    height: auto;
+    min-height: 100dvh;
+    padding: 16px;
+    align-items: stretch;
+  }
 }

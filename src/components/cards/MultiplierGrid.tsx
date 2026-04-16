@@ -16,11 +16,11 @@ export function MultiplierGrid(props: {
           <div
             key={index}
             className={classNames(
-              "w-16 h-16 flex items-center justify-center rounded-lg transition-all duration-300",
+              "mx-auto flex h-10 w-10 items-center justify-center rounded-lg text-[10px] transition-all duration-300 sm:h-12 sm:w-12 sm:text-xs md:h-14 md:w-14 md:text-sm lg:h-16 lg:w-16",
               isHighlighted
                 ? value === "LOST"
-                  ? "text-red-500 bg-[#0905058e] scale-110 shadow-lg brightness-110"
-                  : "text-green-500 bg-[#0905058e] scale-110 shadow-lg brightness-110"
+                  ? "text-red-500 bg-[#0905058e] scale-110"
+                  : "text-green-500 bg-[#0905058e] scale-110"
                 : "bg-[#0905058e] text-white brightness-100",
             )}
           >

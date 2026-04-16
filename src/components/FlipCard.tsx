@@ -8,7 +8,7 @@ type FlipCardProps = {
 
 export function FlipCard({ front, back, flipped }: FlipCardProps) {
   return (
-    <div className="perspective-distant w-25 h-50 cursor-pointer">
+    <div className="perspective-distant h-22 w-11 cursor-pointer sm:h-28 sm:w-14 md:h-36 md:w-18 lg:h-50 lg:w-25">
       <div
         style={{}}
         className={classNames(
@@ -19,13 +19,13 @@ export function FlipCard({ front, back, flipped }: FlipCardProps) {
         {/* FRONT */}
         <img
           src={front}
-          className="absolute w-full h-full object-cover rounded-3xl backface-hidden"
+          className="absolute w-full h-full object-cover rounded-xl lg:rounded-3xl backface-hidden"
         />
 
         {/* BACK */}
         <img
           src={back}
-          className="absolute w-full h-full object-cover rounded-3xl backface-hidden rotate-y-180"
+          className="absolute w-full h-full object-cover rounded-xl lg:rounded-3xl backface-hidden rotate-y-180"
         />
       </div>
     </div>

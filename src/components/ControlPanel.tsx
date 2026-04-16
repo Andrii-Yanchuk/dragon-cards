@@ -4,6 +4,7 @@ import {
   type Risk,
 } from "../lib/gameStore";
 import classNames from "classnames";
+import { BalanceDisplay } from "./BalanceDisplay";
 
 export function ControlPanel() {
   const bet = useGameStore((s) => s.betAmount);
@@ -18,7 +19,7 @@ export function ControlPanel() {
   const handleMax = () => setBet(Math.min(balance, 1000));
 
   return (
-    <div className="w-64 h-full max-h-175 bg-(--code-bg) border-r border-[#2e303a] p-4 flex flex-col">
+    <div className="flex h-full max-h-175 w-64 flex-col border-r border-[#2e303a] bg-(--code-bg) p-4 max-lg:h-auto max-lg:max-h-none max-lg:w-full max-lg:rounded-2xl max-lg:border-r-0 max-lg:border border-[#2e303a]">
       {/* BET */}
       <div className="mb-4">
         <h2 className="w-fit text-sm text-gray-400 mb-2">Bet Amount</h2>
@@ -87,18 +88,12 @@ export function ControlPanel() {
 
       <button
         onClick={startRound}
-        className="bg-purple-500 hover:bg-purple-600 transition rounded-xl py-3 text-white font-medium shadow-lg shadow-purple-500/20 cursor-pointer"
+        className="cursor-pointer rounded-xl bg-purple-500 py-3 font-medium text-white shadow-lg shadow-purple-500/20 transition hover:bg-purple-600"
       >
         Place Bet
       </button>
 
-      {/* BALANCE */}
-      <div className="mt-auto pt-4 border-t border-[#2e303a] text-sm text-gray-400 flex justify-between">
-        <span>Balance</span>
-        <span className="text-white font-medium">
-          {balance.toLocaleString()}
-        </span>
-      </div>
+      <BalanceDisplay className="mt-auto border-0 border-t border-[#2e303a] rounded-none px-0 pb-0 pt-4 max-lg:hidden" />
     </div>
   );
 }

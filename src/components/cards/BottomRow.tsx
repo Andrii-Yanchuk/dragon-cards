@@ -8,10 +8,7 @@ import { closestCenter, DndContext, type DragEndEvent } from "@dnd-kit/core";
 import classNames from "classnames";
 import { DRAGONS } from "../../constans/dragons";
 
-function SortableCard(props: {
-  id: number;
-  dragon: (typeof DRAGONS)[0];
-}) {
+function SortableCard(props: { id: number; dragon: (typeof DRAGONS)[0] }) {
   const { id, dragon } = props;
 
   const {
@@ -35,12 +32,12 @@ function SortableCard(props: {
       {...attributes}
       {...listeners}
       className={classNames(
-        "relative flex flex-col items-center gap-5 cursor-grab active:cursor-grabbing",
+        "relative flex cursor-grab flex-col items-center gap-3 active:cursor-grabbing sm:gap-4 lg:gap-5",
         { "z-10": isDragging },
       )}
     >
       <img
-        className="w-25 h-50 object-cover rounded-3xl"
+        className="h-22 w-11 rounded-xl object-cover sm:h-28 sm:w-14 md:h-36 md:w-18 lg:h-50 lg:w-25 lg:rounded-3xl"
         src={dragon.frontImage}
         alt={dragon.name}
       />
