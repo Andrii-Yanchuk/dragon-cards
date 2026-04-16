@@ -18,15 +18,17 @@ export function Cards() {
   });
 
   return (
-    <div className="grid grid-cols-6 justify-center gap-2 gap-y-4 sm:gap-3 sm:gap-y-6 lg:gap-4 lg:gap-y-10">
+    <div className="flex flex-col justify-center gap-6">
       <TopRow order={topRowOrder} revealedCount={revealedTopCount} />
 
-      <BottomRow order={bottomRowOrder} onDragEnd={handleDragEnd} />
+      <div className="grid grid-cols-6 gap-y-3">
+        <BottomRow order={bottomRowOrder} onDragEnd={handleDragEnd} />
 
-      <MultiplierGrid
-        multipliers={multipliers}
-        highlightedSlots={highlightedSlots}
-      />
+        <MultiplierGrid
+          multipliers={multipliers}
+          highlightedSlots={highlightedSlots}
+        />
+      </div>
     </div>
   );
 }

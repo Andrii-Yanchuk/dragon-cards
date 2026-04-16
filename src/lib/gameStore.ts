@@ -6,6 +6,8 @@ export type GameStatus = "idle" | "playing" | "revealed";
 export type Multiplier = number | "LOST";
 
 const INITIAL_BALANCE = 1000;
+const ROUND_START_DELAY_MS = 450;
+const CARD_FLIP_DELAY_MS = 300;
 
 export const RISK_MULTIPLIERS: Record<Risk, Multiplier[]> = {
   Low: ["LOST", 1, 2, 1, 2.5, 1.5],
@@ -30,6 +32,7 @@ interface GameStore {
   balance: number;
   betAmount: number;
   risk: Risk;
+  soundEnabled: boolean;
   roundStatus: GameStatus;
   slotMultipliers: Multiplier[];
   shuffledTopRow: number[];
@@ -41,6 +44,7 @@ interface GameStore {
   // Actions
   setBetAmount: (betAmount: number) => void;
   setRisk: (risk: Risk) => void;
+  toggleSoundEnabled: () => void;
   startRound: () => void;
   setPlayerBottomRow: (playerBottomRow: number[]) => void;
   resetRound: () => void;
@@ -51,6 +55,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   balance: INITIAL_BALANCE,
   betAmount: 1,
   risk: "Low",
+  soundEnabled: true,
   roundStatus: "idle",
   slotMultipliers: ["LOST", 1, 2, 1, 2.5, 1.5],
   shuffledTopRow: [0, 1, 2, 3, 4, 5],
@@ -66,6 +71,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   setRisk: (risk) =>
     set({ risk, slotMultipliers: [...RISK_MULTIPLIERS[risk]] }),
+
+  toggleSoundEnabled: () =>
+    set((state) => ({ soundEnabled: !state.soundEnabled })),
 
   setPlayerBottomRow: (playerBottomRow) => set({ playerBottomRow }),
 
@@ -86,8 +94,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
     });
 
     const total = 6;
+    await new Promise((res) => setTimeout(res, ROUND_START_DELAY_MS));
+
     for (let i = 1; i <= total; i++) {
-      await new Promise((res) => setTimeout(res, 300));
+      await new Promise((res) => setTimeout(res, CARD_FLIP_DELAY_MS));
       set({ revealedTopCount: i });
     }
 
@@ -122,6 +132,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       balance: INITIAL_BALANCE,
       betAmount: 1,
       risk: "Low",
+      soundEnabled: true,
       roundStatus: "idle",
       slotMultipliers: [...RISK_MULTIPLIERS["Low"]],
       playerBottomRow: [0, 1, 2, 3, 4, 5],
@@ -148,6 +159,7 @@ export const useGameStorePersisted = create<GameStore>()(
       balance: INITIAL_BALANCE,
       betAmount: 1,
       risk: "Low",
+      soundEnabled: true,
       roundStatus: "idle",
       slotMultipliers: ["LOST", 1, 2, 1, 2.5, 1.5],
       shuffledTopRow: [0, 1, 2, 3, 4, 5],
@@ -163,6 +175,9 @@ export const useGameStorePersisted = create<GameStore>()(
 
       setRisk: (risk) =>
         set({ risk, slotMultipliers: [...RISK_MULTIPLIERS[risk]] }),
+
+      toggleSoundEnabled: () =>
+        set((state) => ({ soundEnabled: !state.soundEnabled })),
 
       setPlayerBottomRow: (playerBottomRow) => set({ playerBottomRow }),
 
@@ -183,8 +198,10 @@ export const useGameStorePersisted = create<GameStore>()(
         });
 
         const total = 6;
+        await new Promise((res) => setTimeout(res, ROUND_START_DELAY_MS));
+
         for (let i = 1; i <= total; i++) {
-          await new Promise((res) => setTimeout(res, 300));
+          await new Promise((res) => setTimeout(res, CARD_FLIP_DELAY_MS));
           set({ revealedTopCount: i });
         }
 
@@ -219,6 +236,7 @@ export const useGameStorePersisted = create<GameStore>()(
           balance: INITIAL_BALANCE,
           betAmount: 1,
           risk: "Low",
+          soundEnabled: true,
           roundStatus: "idle",
           slotMultipliers: [...RISK_MULTIPLIERS["Low"]],
           playerBottomRow: [0, 1, 2, 3, 4, 5],
@@ -243,6 +261,7 @@ export const useGameStorePersisted = create<GameStore>()(
       partialize: (state) => ({
         balance: state.balance,
         risk: state.risk,
+        soundEnabled: state.soundEnabled,
       }),
       onRehydrateStorage: () => (state) => {
         if (!state) return;

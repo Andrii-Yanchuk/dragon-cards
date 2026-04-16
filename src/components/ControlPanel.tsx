@@ -4,6 +4,8 @@ import {
   type Risk,
 } from "../lib/gameStore";
 import classNames from "classnames";
+import useSound from "use-sound";
+import startGameSound from "../assets/start-game.mp3";
 import { BalanceDisplay } from "./BalanceDisplay";
 
 export function ControlPanel() {
@@ -12,11 +14,26 @@ export function ControlPanel() {
   const balance = useGameStore((s) => s.balance);
   const risk = useGameStore((s) => s.risk);
   const setRisk = useGameStore((s) => s.setRisk);
+  const roundStatus = useGameStore((s) => s.roundStatus);
+  const soundEnabled = useGameStore((s) => s.soundEnabled);
   const startRound = useGameStore((s) => s.startRound);
 
   const handleHalf = () => setBet(bet / 2);
   const handleDouble = () => setBet(bet * 2);
   const handleMax = () => setBet(Math.min(balance, 1000));
+  const [playStartGame] = useSound(startGameSound, {
+    volume: 0.5,
+    soundEnabled,
+  });
+
+  const canStartRound = bet > 0 && bet <= balance && roundStatus !== "playing";
+
+  const handleStartRound = () => {
+    if (!canStartRound) return;
+
+    playStartGame();
+    startRound();
+  };
 
   return (
     <div className="flex h-full max-h-175 w-64 flex-col border-r border-[#2e303a] bg-(--code-bg) p-4 max-lg:h-auto max-lg:max-h-none max-lg:w-full max-lg:rounded-2xl max-lg:border-r-0 max-lg:border border-[#2e303a]">
@@ -87,7 +104,8 @@ export function ControlPanel() {
       </div>
 
       <button
-        onClick={startRound}
+        onClick={handleStartRound}
+        disabled={!canStartRound}
         className="cursor-pointer rounded-xl bg-purple-500 py-3 font-medium text-white shadow-lg shadow-purple-500/20 transition hover:bg-purple-600"
       >
         Place Bet
