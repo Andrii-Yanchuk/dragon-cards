@@ -9,74 +9,14 @@ import { CSS } from "@dnd-kit/utilities";
 import { closestCenter, DndContext, type DragEndEvent } from "@dnd-kit/core";
 import classNames from "classnames";
 import { FlipCard } from "./FlipCard";
-import { useState } from "react";
-
-const DRAGON_THEMES = [
-  {
-    name: "fire",
-    image: "./images/fire.png",
-  },
-  {
-    name: "ice",
-    image: "./images/frost.png",
-  },
-  {
-    name: "storm",
-    image: "./images/storm.png",
-  },
-  {
-    name: "earth",
-    image: "./images/earth.png",
-  },
-  {
-    name: "shadow",
-    image: "./images/shadow.png",
-  },
-  {
-    name: "wind",
-    image: "./images/empty.png",
-  },
-];
-
-const DRAGON_BACKFACE = [
-  {
-    id: 0,
-    image: "./images/backface.png",
-    frontImage: "./images/fire.png",
-  },
-  {
-    id: 1,
-    image: "./images/backface.png",
-    frontImage: "./images/frost.png",
-  },
-  {
-    id: 2,
-    image: "./images/backface.png",
-    frontImage: "./images/storm.png",
-  },
-  {
-    id: 3,
-    image: "./images/backface.png",
-    frontImage: "./images/earth.png",
-  },
-  {
-    id: 4,
-    image: "./images/backface.png",
-    frontImage: "./images/shadow.png",
-  },
-  {
-    id: 5,
-    image: "./images/backface.png",
-    frontImage: "./images/empty.png",
-  },
-];
+import { DRAGONS } from "../constans/dragons";
 
 function SortableCard({
   id,
   dragon,
 }: {
   id: number;
-  dragon: (typeof DRAGON_THEMES)[0];
+  dragon: (typeof DRAGONS)[0];
 }) {
   const {
     attributes,
@@ -104,7 +44,7 @@ function SortableCard({
     >
       <img
         className="w-25 h-50 object-cover rounded-3xl"
-        src={dragon.image}
+        src={dragon.frontImage}
         alt={dragon.name}
       />
     </div>
@@ -112,71 +52,71 @@ function SortableCard({
 }
 
 export function Cards() {
-  const [flippedIndexes, setFlippedIndexes] = useState<number[]>([]);
-  const multipliers = useGameStore((s) => s.multipliers);
-  const order = useGameStore((s) => s.order);
-  const setOrder = useGameStore((s) => s.setOrder);
+  const revealedTopPositions = useGameStore((s) => s.revealedTopPositions);
+  const multipliers = useGameStore((s) => s.positionMultipliers);
+  const topRowOrder = useGameStore((s) => s.topRowOrder);
+  const bottomRowOrder = useGameStore((s) => s.bottomRowOrder);
+  const setBottomRowOrder = useGameStore((s) => s.setBottomRowOrder);
+  const highlightedPositions = useGameStore((s) => s.highlightedPositions);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (!over || active.id === over.id) return;
 
-    const oldIndex = order.indexOf(Number(active.id));
-    const newIndex = order.indexOf(Number(over.id));
+    const oldIndex = bottomRowOrder.indexOf(Number(active.id));
+    const newIndex = bottomRowOrder.indexOf(Number(over.id));
 
-    const newOrder = arrayMove(order, oldIndex, newIndex);
+    const newOrder = arrayMove(bottomRowOrder, oldIndex, newIndex);
 
-    setOrder(newOrder);
-  };
-
-  const handleReveal = async () => {
-    for (let i = 0; i <= DRAGON_BACKFACE.length; i++) {
-      await new Promise((res) => setTimeout(res, 300));
-      setFlippedIndexes((prev) => [...prev, i]);
-    }
-  };
-
-  const handleReset = () => {
-    setFlippedIndexes([]);
+    setBottomRowOrder(newOrder);
   };
 
   return (
     <div className="grid grid-cols-6 justify-center gap-4 gap-y-10">
-      {DRAGON_BACKFACE.map((dragon) => {
+      {topRowOrder.map((id, index) => {
+        const dragon = DRAGONS[id];
         return (
           <FlipCard
             key={dragon.id}
             front={dragon.image}
             back={dragon.frontImage}
-            flipped={flippedIndexes.includes(dragon.id)}
+            flipped={revealedTopPositions.includes(index)}
           />
         );
       })}
 
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={order} strategy={rectSortingStrategy}>
-          {order.map((id) => {
-            const dragon = DRAGON_THEMES[id];
+        <SortableContext items={bottomRowOrder} strategy={rectSortingStrategy}>
+          {bottomRowOrder.map((id) => {
+            const dragon = DRAGONS[id];
 
             return <SortableCard key={id} id={id} dragon={dragon} />;
           })}
         </SortableContext>
       </DndContext>
 
-      {multipliers.map((value, index) => (
-        <div
-          key={index}
-          className="bg-[#0905058e] rounded-lg w-full h-16 flex items-center justify-center text-white"
-        >
-          {value === "LOST" ? "LOST" : `${value}x`}
-        </div>
-      ))}
-
-      <div>
-        <button onClick={handleReveal}>Reveal</button>
-        <button onClick={handleReset}>Reset</button>
-      </div>
+      {multipliers.map((value, index) => {
+        const isHighlighted = highlightedPositions.includes(index);
+        return (
+          <div
+            key={index}
+            className={`
+        w-16 h-16 flex items-center justify-center rounded-lg
+        transition-all duration-300
+        ${
+          isHighlighted
+            ? value === "LOST"
+              ? "text-red-500 bg-[#0905058e]  scale-110 shadow-lg"
+              : "text-green-500 bg-[#0905058e] scale-110 shadow-lg"
+            : "bg-[#0905058e] text-white"
+        }
+      `}
+          >
+            {value === "LOST" ? "LOST" : `${value}x`}
+          </div>
+        );
+      })}
     </div>
   );
 }

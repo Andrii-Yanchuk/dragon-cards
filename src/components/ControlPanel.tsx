@@ -3,9 +3,9 @@ import { useGameStore, type Risk } from "../lib/gameStore";
 import classNames from "classnames";
 
 export function ControlPanel() {
-  const bet = useGameStore((s) => s.bet);
+  const bet = useGameStore((s) => s.currentBet);
   const setBet = useGameStore((s) => s.setBet);
-  const balance = useGameStore((s) => s.balance);
+  const balance = useGameStore((s) => s.playerBalance);
   const risk = useGameStore((s) => s.risk);
   const setRisk = useGameStore((s) => s.setRisk);
   const placeBet = useGameStore((s) => s.placeBet);

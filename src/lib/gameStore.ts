@@ -13,119 +13,139 @@ export const RISK_MULTIPLIERS: Record<Risk, Multiplier[]> = {
   Classic: ["LOST", 3.5, 4, "LOST", 10, 7],
 };
 
+function shuffle(array: number[]) {
+  const arr = [...array];
+
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+
+  return arr;
+}
+
 interface GameStore {
   // State
-  balance: number;
-  bet: number;
+  playerBalance: number;
+  currentBet: number;
   risk: Risk;
   status: GameStatus;
-  multipliers: Multiplier[];
-  order: number[];
-  activeIndexes: number[];
+  positionMultipliers: Multiplier[];
+  topRowOrder: number[];
+  bottomRowOrder: number[];
   winAmount: number | null;
+  revealedTopPositions: number[];
+  highlightedPositions: number[];
 
   // Actions
-  setBet: (bet: number) => void;
+  setBet: (currentBet: number) => void;
   setRisk: (risk: Risk) => void;
   placeBet: () => void;
-  setOrder: (order: number[]) => void;
-  confirmPlacement: () => void;
+  setBottomRowOrder: (bottomRowOrder: number[]) => void;
   playAgain: () => void;
   resetGame: () => void;
+  revealCards: () => void;
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
-  balance: INITIAL_BALANCE,
-  bet: 1,
+  playerBalance: INITIAL_BALANCE,
+  currentBet: 1,
   risk: "Low",
   status: "idle",
-  multipliers: ["LOST", 1, 2, 1, 2.5, 1.5],
-  order: [0, 1, 2, 3, 4, 5],
-  activeIndexes: [],
+  positionMultipliers: ["LOST", 1, 2, 1, 2.5, 1.5],
+  topRowOrder: [0, 1, 2, 3, 4, 5],
+  bottomRowOrder: [0, 1, 2, 3, 4, 5],
   winAmount: null,
+  revealedTopPositions: [],
+  highlightedPositions: [],
+
+  revealCards: async () => {
+    const total = 6;
+
+    for (let i = 0; i < total; i++) {
+      await new Promise((res) => setTimeout(res, 300));
+      set((state) => ({
+        revealedTopPositions: [...state.revealedTopPositions, i],
+      }));
+    }
+  },
 
   setBet: (v) => {
     if (v < 0) return;
-    set({ bet: Math.min(v, 1000) });
+    set({ currentBet: Math.min(v, 1000) });
   },
 
-  setRisk: (risk) => set({ risk, multipliers: [...RISK_MULTIPLIERS[risk]] }),
+  setRisk: (risk) =>
+    set({ risk, positionMultipliers: [...RISK_MULTIPLIERS[risk]] }),
 
-  setOrder: (order) => set({ order }),
+  setBottomRowOrder: (bottomRowOrder) => set({ bottomRowOrder }),
 
-  placeBet: () => {
-    const { bet, balance, risk } = get();
-    if (!bet || bet > balance) return;
+  placeBet: async () => {
+    const { currentBet, playerBalance, revealCards } = get();
 
-    const multipliers = [...RISK_MULTIPLIERS[risk]].sort(
-      () => Math.random() - 0.5,
-    );
+    if (!currentBet || currentBet > playerBalance) return;
+
+    const shuffledTopRowOrder = shuffle([0, 1, 2, 3, 4, 5]);
 
     set({
-      balance: balance - bet,
+      playerBalance: playerBalance - currentBet,
       status: "playing",
-      multipliers,
-      activeIndexes: [],
       winAmount: null,
+      revealedTopPositions: [],
+      topRowOrder: shuffledTopRowOrder,
     });
-  },
 
-  confirmPlacement: () => {
-    const { multipliers, bet } = get();
+    await revealCards();
 
-    // 🔥 генеруємо кілька активних позицій
-    const count = Math.floor(Math.random() * 3) + 1; // 1–3 позиції
+    const roundResults = get().topRowOrder.map((topId, i) => {
+      const bottomId = get().bottomRowOrder[i];
 
-    const shuffledIndexes = [0, 1, 2, 3, 4, 5].sort(() => Math.random() - 0.5);
+      if (topId !== bottomId) return null;
 
-    const activeIndexes = shuffledIndexes.slice(0, count);
+      return get().positionMultipliers[i];
+    });
 
-    // 🔍 беремо значення з цих позицій
-    const values = activeIndexes.map((i) => multipliers[i]);
+    const hasLost = roundResults.includes("LOST");
 
-    // ❌ якщо хоч один LOST → програш
-    const hasLost = values.includes("LOST");
+    const winAmount = hasLost
+      ? 0
+      : roundResults
+          .filter((v): v is number => typeof v === "number")
+          .reduce((sum, v) => sum + v, 0) * get().currentBet;
 
-    let winAmount: number | null = null;
-
-    if (!hasLost) {
-      const numericValues = values.filter((v): v is number => v !== "LOST");
-
-      winAmount =
-        numericValues.reduce((sum, v) => sum + (v as number), 0) * bet;
-    } else {
-      winAmount = 0;
-    }
+    const highlightedPositions = roundResults
+      .map((v, i) => (v !== null ? i : null))
+      .filter((v): v is number => v !== null);
 
     set({
-      activeIndexes,
       status: "revealed",
       winAmount,
+      highlightedPositions,
+      playerBalance: get().playerBalance + winAmount,
     });
   },
 
   resetGame: () => {
     set({
-      balance: INITIAL_BALANCE,
-      bet: 0,
+      playerBalance: INITIAL_BALANCE,
+      currentBet: 1,
       risk: "Low",
       status: "idle",
-      multipliers: [...RISK_MULTIPLIERS["Low"]],
-      order: [0, 1, 2, 3, 4, 5],
-      activeIndexes: [],
+      positionMultipliers: [...RISK_MULTIPLIERS["Low"]],
+      bottomRowOrder: [0, 1, 2, 3, 4, 5],
       winAmount: null,
+      revealedTopPositions: [],
+      highlightedPositions: [],
     });
   },
 
   playAgain: () => {
-    const { risk } = get();
-
     set({
       status: "idle",
-      multipliers: [...RISK_MULTIPLIERS[risk]].sort(() => Math.random() - 0.5),
-      order: [0, 1, 2, 3, 4, 5],
-      activeIndexes: [],
+      bottomRowOrder: [0, 1, 2, 3, 4, 5],
       winAmount: null,
+      revealedTopPositions: [],
+      highlightedPositions: [],
     });
   },
 }));
