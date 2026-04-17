@@ -16,13 +16,11 @@ export function FlipCard({ front, back, flipped }: FlipCardProps) {
           { "rotate-y-180": flipped },
         )}
       >
-        {/* FRONT */}
         <img
           src={front}
           className="absolute w-full h-full object-cover rounded-xl lg:rounded-3xl backface-hidden"
         />
 
-        {/* BACK */}
         <img
           src={back}
           className="absolute w-full h-full object-cover rounded-xl lg:rounded-3xl backface-hidden rotate-y-180"

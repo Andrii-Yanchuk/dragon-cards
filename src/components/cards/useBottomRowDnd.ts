@@ -1,11 +1,14 @@
 import { arrayMove } from "@dnd-kit/sortable";
 import type { DragEndEvent } from "@dnd-kit/core";
 import { useCallback } from "react";
+import type { DragonOrder } from "../../types/dragon";
 
-export function useBottomRowDnd(params: {
-  order: number[];
-  setOrder: (order: number[]) => void;
-}) {
+interface UseBottomRowDndParams {
+  order: DragonOrder;
+  setOrder: (order: DragonOrder) => void;
+}
+
+export function useBottomRowDnd(params: UseBottomRowDndParams) {
   const { order, setOrder } = params;
 
   return useCallback(

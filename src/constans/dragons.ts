@@ -1,4 +1,6 @@
-export const DRAGONS = [
+import type { Dragon } from "../types/dragon";
+
+export const DRAGONS: Dragon[] = [
   {
     id: 0,
     name: "fire",

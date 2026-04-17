@@ -1,54 +1,15 @@
-import {
-  rectSortingStrategy,
-  SortableContext,
-  useSortable,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import { closestCenter, DndContext, type DragEndEvent } from "@dnd-kit/core";
-import classNames from "classnames";
 import { DRAGONS } from "../../constans/dragons";
+import type { DragonOrder } from "../../types/dragon";
+import { SortableCard } from "./DndCard";
 
-function SortableCard(props: { id: number; dragon: (typeof DRAGONS)[0] }) {
-  const { id, dragon } = props;
-
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className={classNames(
-        "relative flex cursor-grab flex-col items-center gap-3 active:cursor-grabbing sm:gap-4 lg:gap-5",
-        { "z-10": isDragging },
-      )}
-    >
-      <img
-        className="h-22 w-11 rounded-xl object-cover sm:h-28 sm:w-14 md:h-36 md:w-18 lg:h-50 lg:w-25 lg:rounded-3xl"
-        src={dragon.frontImage}
-        alt={dragon.name}
-      />
-    </div>
-  );
+interface BottomRowProps {
+  order: DragonOrder;
+  onDragEnd: (event: DragEndEvent) => void;
 }
 
-export function BottomRow(props: {
-  order: number[];
-  onDragEnd: (event: DragEndEvent) => void;
-}) {
+export function BottomRow(props: BottomRowProps) {
   const { order, onDragEnd } = props;
 
   return (

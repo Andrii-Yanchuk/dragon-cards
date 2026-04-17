@@ -1,7 +1,13 @@
 import { FlipCard } from "../FlipCard";
 import { DRAGONS } from "../../constans/dragons";
+import type { DragonOrder } from "../../types/dragon";
 
-export function TopRow(props: { order: number[]; revealedCount: number }) {
+interface TopRowProps {
+  order: DragonOrder;
+  revealedCount: number;
+}
+
+export function TopRow(props: TopRowProps) {
   const { order, revealedCount } = props;
 
   return (
