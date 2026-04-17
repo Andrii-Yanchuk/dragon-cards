@@ -1,73 +1,97 @@
-# React + TypeScript + Vite
+# Dragon Cards
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Dragon Cards is a small React + TypeScript betting game where you rearrange a row of dragon cards, place a bet, and reveal the top row to see how many positions you matched.
 
-Currently, two official plugins are available:
+![Screenshot](/public/images/screenshot.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## How It Works
 
-## React Compiler
+- Drag the bottom row to arrange the dragons in your predicted order.
+- Choose a bet amount and a risk level.
+- Start the round and watch the top row flip one card at a time.
+- Matching slots award their multiplier.
+- If any matched slot lands on `LOST`, the round pays out `0`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+- Drag-and-drop card ordering with `@dnd-kit`
+- Four risk presets: `Low`, `Medium`, `High`, and `Classic`
+- Animated card reveal flow
+- Sound effects for round start, card flips, wins, and losses
+- Persistent balance and settings with Zustand
+- Responsive layout for desktop and smaller screens
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tech Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- React 19
+- TypeScript
+- Vite
+- Tailwind CSS
+- Zustand
+- `@dnd-kit`
+- `use-sound`
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Getting Started
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Prerequisites
+
+- Node.js 20+ recommended
+- npm
+
+### Install
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Run In Development
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+### Build For Production
+
+```bash
+npm run build
+```
+
+### Preview Production Build
+
+```bash
+npm run preview
+```
+
+## Scripts
+
+- `npm run dev` starts the Vite dev server
+- `npm run build` runs TypeScript checks and creates a production build
+- `npm run lint` runs ESLint
+- `npm run preview` serves the built app locally
+
+## Project Structure
+
+```text
+src/
+  components/        UI building blocks and game sections
+  components/cards/  card rows, drag-and-drop card, multiplier grid
+  constans/          static dragon card data
+  lib/               Zustand game state and round logic
+  types/             shared TypeScript types
+```
+
+## Game State
+
+The core game logic lives in `src/lib/gameStore.ts` and manages:
+
+- balance and bet amount
+- risk selection and multipliers
+- shuffled top row and player order
+- round reveal timing
+- payout calculation
+- persisted sound and balance settings
+
+## Notes
+
+- Balance and some settings are persisted in local storage.
+- The project currently uses local image and audio assets from the repo.
