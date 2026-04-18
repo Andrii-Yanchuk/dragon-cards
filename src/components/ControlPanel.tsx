@@ -27,7 +27,7 @@ export function ControlPanel() {
   });
 
   const isPanelLocked = roundStatus === "playing";
-  const canStartRound = bet > 0 && bet <= balance && !isPanelLocked;
+  const canStartRound = bet >= 1 && bet <= balance && !isPanelLocked;
 
   const handleStartRound = () => {
     if (!canStartRound) return;
@@ -59,7 +59,8 @@ export function ControlPanel() {
               type="number"
               value={bet}
               onChange={(e) => setBet(Number(e.target.value))}
-              min={0}
+              min={1}
+              step={0.01}
               max={1000}
               className="w-full bg-transparent outline-none text-white text-lg disabled:cursor-not-allowed
                 [appearance:textfield]

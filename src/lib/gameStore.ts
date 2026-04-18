@@ -9,6 +9,12 @@ const INITIAL_BALANCE = 1000;
 const ROUND_START_DELAY_MS = 450;
 const CARD_FLIP_DELAY_MS = 300;
 
+function normalizeBetAmount(value: number) {
+  if (!Number.isFinite(value)) return 1;
+
+  return Math.min(Math.max(Math.round(value * 100) / 100, 1), 1000);
+}
+
 export const RISK_MULTIPLIERS: Record<Risk, Multiplier[]> = {
   Low: ["LOST", 1, 2, 1, 2.5, 1.5],
   Medium: ["LOST", 3, 5, "LOST", 6, 1.5],
@@ -65,8 +71,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   highlightedSlots: [],
 
   setBetAmount: (v) => {
-    if (v < 0) return;
-    set({ betAmount: Math.min(v, 1000) });
+    set({ betAmount: normalizeBetAmount(v) });
   },
 
   setRisk: (risk) =>
@@ -169,8 +174,7 @@ export const useGameStorePersisted = create<GameStore>()(
       highlightedSlots: [],
 
       setBetAmount: (v) => {
-        if (v < 0) return;
-        set({ betAmount: Math.min(v, 1000) });
+        set({ betAmount: normalizeBetAmount(v) });
       },
 
       setRisk: (risk) =>
