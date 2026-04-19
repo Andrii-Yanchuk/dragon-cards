@@ -2,7 +2,7 @@ import {
   Volume2 as VolumeIconOn,
   VolumeX as VolumeIconOff,
 } from "lucide-react";
-import { useGameStorePersisted as useGameStore } from "../lib/gameStore";
+import { useGameStore } from "../lib/gameStore";
 import { Cards } from "./Cards";
 import { GameSounds } from "./GameSounds";
 

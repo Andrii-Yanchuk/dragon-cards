@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import useSound from "use-sound";
-import { useGameStorePersisted as useGameStore } from "../lib/gameStore";
+import { useGameStore } from "../lib/gameStore";
 import flipCardSound from "../assets/flip-card.mp3";
 import gameOverSound from "../assets/game-over.mp3";
 import winSound from "../assets/win-sound.mp3";

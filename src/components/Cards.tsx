@@ -1,4 +1,4 @@
-import { useGameStorePersisted as useGameStore } from "../lib/gameStore";
+import { useGameStore } from "../lib/gameStore";
 import { BottomRow } from "./cards/BottomRow";
 import { MultiplierGrid } from "./cards/MultiplierGrid";
 import { TopRow } from "./cards/TopRow";

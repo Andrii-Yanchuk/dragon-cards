@@ -1,8 +1,5 @@
 import { DollarSign } from "lucide-react";
-import {
-  useGameStorePersisted as useGameStore,
-  type Risk,
-} from "../lib/gameStore";
+import { useGameStore, type Risk } from "../lib/gameStore";
 import classNames from "classnames";
 import useSound from "use-sound";
 import startGameSound from "../assets/start-game.mp3";

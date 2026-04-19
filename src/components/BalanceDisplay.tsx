@@ -1,4 +1,4 @@
-import { useGameStorePersisted as useGameStore } from "../lib/gameStore";
+import { useGameStore } from "../lib/gameStore";
 
 type BalanceDisplayProps = {
   className?: string;
