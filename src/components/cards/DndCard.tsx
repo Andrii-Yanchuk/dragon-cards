@@ -29,13 +29,18 @@ export function SortableCard(props: SortableCardProps) {
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
       className={classNames(
-        "relative flex cursor-grab flex-col items-center gap-3 active:cursor-grabbing sm:gap-4 lg:gap-5",
+        "relative flex flex-col items-center gap-3 cursor-pointer sm:gap-4 lg:gap-5",
         { "z-10": isDragging },
       )}
     >
+      <div
+        {...attributes}
+        {...listeners}
+        className="absolute right-2 top-2 bg-[#0905058e] rounded-full size-7 flex justify-center items-center cursor-grab active:cursor-grabbing "
+      >
+        ≡
+      </div>
       <img
         className="h-22 w-11 rounded-xl object-cover sm:h-28 sm:w-14 md:h-36 md:w-18 lg:h-50 lg:w-25 lg:rounded-3xl"
         src={dragon.frontImage}
