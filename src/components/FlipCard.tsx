@@ -10,7 +10,6 @@ export function FlipCard({ front, back, flipped }: FlipCardProps) {
   return (
     <div className="perspective-distant h-22 w-11 cursor-pointer sm:h-28 sm:w-14 md:h-36 md:w-18 lg:h-50 lg:w-25">
       <div
-        style={{}}
         className={classNames(
           "relative w-full h-full transform-3d transition-all duration-300",
           { "rotate-y-180": flipped },
@@ -18,11 +17,13 @@ export function FlipCard({ front, back, flipped }: FlipCardProps) {
       >
         <img
           src={front}
+          alt="front-image"
           className="absolute w-full h-full object-cover rounded-xl lg:rounded-3xl backface-hidden"
         />
 
         <img
           src={back}
+          alt="back-image"
           className="absolute w-full h-full object-cover rounded-xl lg:rounded-3xl backface-hidden rotate-y-180"
         />
       </div>
