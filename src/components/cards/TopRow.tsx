@@ -1,5 +1,5 @@
 import { FlipCard } from "../FlipCard";
-import { DRAGONS } from "../../constans/dragons";
+import { DRAGONS } from "../../data/dragons";
 import type { DragonOrder } from "../../types/dragon";
 
 interface TopRowProps {

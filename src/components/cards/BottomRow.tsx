@@ -1,6 +1,6 @@
 import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import { closestCenter, DndContext, type DragEndEvent } from "@dnd-kit/core";
-import { DRAGONS } from "../../constans/dragons";
+import { DRAGONS } from "../../data/dragons";
 import type { DragonOrder } from "../../types/dragon";
 import { SortableCard } from "./DndCard";
 
@@ -19,7 +19,12 @@ export function BottomRow(props: BottomRowProps) {
         {order.map((id) => {
           const dragon = DRAGONS[id];
           return (
-            <SortableCard key={id} id={id} dragon={dragon} disabled={disabled} />
+            <SortableCard
+              key={id}
+              id={id}
+              dragon={dragon}
+              disabled={disabled}
+            />
           );
         })}
       </SortableContext>
