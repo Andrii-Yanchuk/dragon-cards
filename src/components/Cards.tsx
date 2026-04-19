@@ -11,6 +11,9 @@ export function Cards() {
   const bottomRowOrder = useGameStore((s) => s.playerBottomRow);
   const setBottomRowOrder = useGameStore((s) => s.setPlayerBottomRow);
   const highlightedSlots = useGameStore((s) => s.highlightedSlots);
+  const roundStatus = useGameStore((s) => s.roundStatus);
+
+  const isCardsLocked = roundStatus === "playing";
 
   const handleDragEnd = useBottomRowDnd({
     order: bottomRowOrder,
@@ -22,7 +25,11 @@ export function Cards() {
       <TopRow order={topRowOrder} revealedCount={revealedTopCount} />
 
       <div className="grid grid-cols-6 gap-y-3">
-        <BottomRow order={bottomRowOrder} onDragEnd={handleDragEnd} />
+        <BottomRow
+          order={bottomRowOrder}
+          onDragEnd={handleDragEnd}
+          disabled={isCardsLocked}
+        />
 
         <MultiplierGrid
           multipliers={multipliers}

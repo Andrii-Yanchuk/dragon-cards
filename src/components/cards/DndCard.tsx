@@ -6,10 +6,11 @@ import type { Dragon, DragonId } from "../../types/dragon";
 interface SortableCardProps {
   id: DragonId;
   dragon: Dragon;
+  disabled?: boolean;
 }
 
 export function SortableCard(props: SortableCardProps) {
-  const { id, dragon } = props;
+  const { id, dragon, disabled = false } = props;
 
   const {
     attributes,
@@ -18,7 +19,7 @@ export function SortableCard(props: SortableCardProps) {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id });
+  } = useSortable({ id, disabled });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -31,15 +32,20 @@ export function SortableCard(props: SortableCardProps) {
       style={style}
       className={classNames(
         "relative flex flex-col items-center gap-3 cursor-pointer sm:gap-4 lg:gap-5",
-        { "z-10": isDragging },
+        {
+          "z-10": isDragging,
+          "opacity-60 cursor-not-allowed": disabled,
+        },
       )}
     >
       <div
-        {...attributes}
-        {...listeners}
-        className="absolute right-2 top-2 bg-[#0905058e] rounded-full size-7 flex justify-center items-center cursor-grab active:cursor-grabbing "
+        {...(disabled ? {} : attributes)}
+        {...(disabled ? {} : listeners)}
+        className={classNames(
+          "absolute right-2 top-2 flex size-7 items-center justify-center rounded-full bg-[#0905058e] cursor-grab active:cursor-grabbing",
+        )}
       >
-        ≡
+        :::
       </div>
       <img
         className="h-22 w-11 rounded-xl object-cover sm:h-28 sm:w-14 md:h-36 md:w-18 lg:h-50 lg:w-25 lg:rounded-3xl"
