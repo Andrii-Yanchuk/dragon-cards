@@ -11,7 +11,7 @@ export function GameBoard() {
   const toggleSoundEnabled = useGameStore((s) => s.toggleSoundEnabled);
 
   return (
-    <div className="relative flex h-full max-h-175 w-full flex-col items-center justify-center bg-[url(/images/dragon-bg.png)] bg-cover bg-center p-12 max-lg:min-h-88 max-lg:max-h-none max-lg:rounded-2xl max-lg:px-3 max-lg:py-5">
+    <div className="relative flex h-full max-h-175 w-full flex-col items-center justify-center bg-[url(/images/dragon-bg.webp)] bg-cover bg-center p-12 max-lg:min-h-88 max-lg:max-h-none max-lg:rounded-2xl max-lg:px-3 max-lg:py-5">
       <button
         type="button"
         onClick={toggleSoundEnabled}
