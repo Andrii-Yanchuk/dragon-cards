@@ -9,6 +9,20 @@ const INITIAL_BALANCE = 1000;
 const ROUND_START_DELAY_MS = 450;
 const CARD_FLIP_DELAY_MS = 300;
 
+const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+const playRevealAnimation = async (
+  total: number,
+  set: (state: Partial<GameStore>) => void,
+) => {
+  await delay(ROUND_START_DELAY_MS);
+
+  for (let i = 1; i <= total; i++) {
+    await delay(CARD_FLIP_DELAY_MS);
+    set({ revealedTopCount: i });
+  }
+};
+
 function normalizeBetAmount(value: number) {
   if (!Number.isFinite(value)) return 1;
 
@@ -90,6 +104,7 @@ export const useGameStore = create<GameStore>()(
         if (!betAmount || betAmount > balance) return;
 
         const shuffledTopRow = shuffle([0, 1, 2, 3, 4, 5]);
+        const total = 6;
 
         set({
           balance: balance - betAmount,
@@ -100,13 +115,7 @@ export const useGameStore = create<GameStore>()(
           shuffledTopRow,
         });
 
-        const total = 6;
-        await new Promise((res) => setTimeout(res, ROUND_START_DELAY_MS));
-
-        for (let i = 1; i <= total; i++) {
-          await new Promise((res) => setTimeout(res, CARD_FLIP_DELAY_MS));
-          set({ revealedTopCount: i });
-        }
+        await playRevealAnimation(total, set);
 
         let hasLost = false;
         let multiplierSum = 0;
