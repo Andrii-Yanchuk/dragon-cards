@@ -2,6 +2,7 @@ import { useGameStore } from "../lib/gameStore";
 import { BottomRow } from "./cards/BottomRow";
 import { MultiplierGrid } from "./cards/MultiplierGrid";
 import { TopRow } from "./cards/TopRow";
+import { useBottomRowClick } from "./cards/useBottomRowClick";
 import { useBottomRowDnd } from "./cards/useBottomRowDnd";
 
 export function Cards() {
@@ -15,9 +16,17 @@ export function Cards() {
 
   const isCardsLocked = roundStatus === "playing";
 
+  const { selectedId, handleCardClick, markDragHappened } = useBottomRowClick(
+    bottomRowOrder,
+    setBottomRowOrder,
+  );
+
   const handleDragEnd = useBottomRowDnd({
     order: bottomRowOrder,
-    setOrder: setBottomRowOrder,
+    setOrder: (next) => {
+      markDragHappened(); // flag before state update
+      setBottomRowOrder(next);
+    },
   });
 
   return (
@@ -28,6 +37,8 @@ export function Cards() {
         <BottomRow
           order={bottomRowOrder}
           onDragEnd={handleDragEnd}
+          selectedId={selectedId}
+          onCardClick={handleCardClick}
           disabled={isCardsLocked}
         />
 

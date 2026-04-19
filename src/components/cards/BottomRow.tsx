@@ -8,10 +8,12 @@ interface BottomRowProps {
   order: DragonOrder;
   onDragEnd: (event: DragEndEvent) => void;
   disabled?: boolean;
+  selectedId: number | null; // new
+  onCardClick: (id: number) => void; // new
 }
 
 export function BottomRow(props: BottomRowProps) {
-  const { order, onDragEnd, disabled = false } = props;
+  const { order, onDragEnd, disabled = false, selectedId, onCardClick } = props;
 
   return (
     <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd}>
@@ -24,6 +26,8 @@ export function BottomRow(props: BottomRowProps) {
               id={id}
               dragon={dragon}
               disabled={disabled}
+              isSelected={selectedId === id}
+              onClick={onCardClick}
             />
           );
         })}
