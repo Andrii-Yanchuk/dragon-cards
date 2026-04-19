@@ -7,16 +7,30 @@ import classNames from "classnames";
 import useSound from "use-sound";
 import startGameSound from "../assets/start-game.mp3";
 import { BalanceDisplay } from "./BalanceDisplay";
+import { useShallow } from "zustand/shallow";
 
 export function ControlPanel() {
-  const bet = useGameStore((s) => s.betAmount);
-  const setBet = useGameStore((s) => s.setBetAmount);
-  const balance = useGameStore((s) => s.balance);
-  const risk = useGameStore((s) => s.risk);
-  const setRisk = useGameStore((s) => s.setRisk);
-  const roundStatus = useGameStore((s) => s.roundStatus);
-  const soundEnabled = useGameStore((s) => s.soundEnabled);
-  const startRound = useGameStore((s) => s.startRound);
+  const {
+    betAmount: bet,
+    setBetAmount: setBet,
+    balance,
+    risk,
+    setRisk,
+    roundStatus,
+    soundEnabled,
+    startRound,
+  } = useGameStore(
+    useShallow((s) => ({
+      betAmount: s.betAmount,
+      setBetAmount: s.setBetAmount,
+      balance: s.balance,
+      risk: s.risk,
+      setRisk: s.setRisk,
+      roundStatus: s.roundStatus,
+      soundEnabled: s.soundEnabled,
+      startRound: s.startRound,
+    })),
+  );
 
   const handleHalf = () => setBet(bet / 2);
   const handleDouble = () => setBet(bet * 2);
