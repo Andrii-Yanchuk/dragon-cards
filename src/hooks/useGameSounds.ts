@@ -5,7 +5,7 @@ import flipCardSound from "../assets/flip-card.mp3";
 import gameOverSound from "../assets/game-over.mp3";
 import winSound from "../assets/win-sound.mp3";
 
-export function GameSounds() {
+export function useGameSounds() {
   const revealedTopCount = useGameStore((s) => s.revealedTopCount);
   const roundStatus = useGameStore((s) => s.roundStatus);
   const payout = useGameStore((s) => s.payout);
@@ -31,7 +31,6 @@ export function GameSounds() {
     if (revealedTopCount > previousRevealCount.current) {
       playFlipCard();
     }
-
     previousRevealCount.current = revealedTopCount;
   }, [playFlipCard, revealedTopCount]);
 
@@ -59,6 +58,4 @@ export function GameSounds() {
     playWin,
     roundStatus,
   ]);
-
-  return null;
 }
