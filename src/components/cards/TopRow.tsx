@@ -16,7 +16,7 @@ export function TopRow(props: TopRowProps) {
         const dragon = DRAGONS[id];
         return (
           <FlipCard
-            key={index}
+            key={id}
             front={dragon.image}
             back={dragon.frontImage}
             flipped={index < revealedCount}
