@@ -1,7 +1,7 @@
 import { arrayMove } from "@dnd-kit/sortable";
 import type { DragEndEvent } from "@dnd-kit/core";
 import { useCallback } from "react";
-import type { DragonOrder } from "../../types/dragon";
+import type { DragonOrder } from "../types/dragon";
 
 interface UseBottomRowDndParams {
   order: DragonOrder;
