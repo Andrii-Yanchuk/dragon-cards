@@ -2,8 +2,8 @@ import { useGameStore } from "../lib/gameStore";
 import { BottomRow } from "./cards/BottomRow";
 import { MultiplierGrid } from "./cards/MultiplierGrid";
 import { TopRow } from "./cards/TopRow";
-import { useBottomRowClick } from "./cards/useBottomRowClick";
-import { useBottomRowDnd } from "./cards/useBottomRowDnd";
+import { useBottomRowClick } from "../hooks/useBottomRowClick";
+import { useBottomRowDnd } from "../hooks/useBottomRowDnd";
 
 export function Cards() {
   const revealedTopCount = useGameStore((s) => s.revealedTopCount);
