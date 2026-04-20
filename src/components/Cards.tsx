@@ -24,7 +24,7 @@ export function Cards() {
   const handleDragEnd = useBottomRowDnd({
     order: bottomRowOrder,
     setOrder: (next) => {
-      markDragHappened(); // flag before state update
+      markDragHappened();
       setBottomRowOrder(next);
     },
   });

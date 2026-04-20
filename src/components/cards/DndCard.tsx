@@ -3,6 +3,7 @@ import { CSS } from "@dnd-kit/utilities";
 import classNames from "classnames";
 import { motion } from "framer-motion";
 import type { Dragon, DragonId } from "../../types/dragon";
+import { Grip } from "lucide-react";
 
 interface SortableCardProps {
   id: DragonId;
@@ -48,10 +49,10 @@ export function SortableCard(props: SortableCardProps) {
       <div
         {...(disabled ? {} : attributes)}
         {...(disabled ? {} : listeners)}
-        className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full bg-[#0905058e] cursor-grab active:cursor-grabbing"
-        onClick={(e) => e.stopPropagation()} // don't trigger card click from handle
+        className="absolute right-2 top-1 flex size-3 items-center justify-center rounded-full bg-[#0905058e] cursor-grab active:cursor-grabbing lg:right-2 lg:top-2 lg:size-7"
+        onClick={(e) => e.stopPropagation()}
       >
-        :::
+        <Grip className="size-2 lg:size-4" />
       </div>
       <img
         className={classNames(
@@ -78,10 +79,10 @@ export function SortableCard(props: SortableCardProps) {
       <div
         {...(disabled ? {} : attributes)}
         {...(disabled ? {} : listeners)}
-        className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full bg-[#0905058e] cursor-grab active:cursor-grabbing"
-        onClick={(e) => e.stopPropagation()} // don't trigger card click from handle
+        className="absolute right-2 top-1 flex size-3 items-center justify-center rounded-full bg-[#0905058e] cursor-grab active:cursor-grabbing lg:right-2 lg:top-2 lg:size-7"
+        onClick={(e) => e.stopPropagation()}
       >
-        :::
+        <Grip className="size-2 lg:size-4" />
       </div>
       <img
         className={classNames(
